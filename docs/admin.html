@@ -94,6 +94,7 @@ async function commit(message, ops) {
   const tree = [];
   for (const op of ops) {
     if (op.remove) tree.push({path: op.path, mode: '100644', type: 'blob', sha: null});
+    else if (op.sha) tree.push({path: op.path, mode: '100644', type: 'blob', sha: op.sha});
     else {
       const blob = await gh('/git/blobs', {method: 'POST',
         body: JSON.stringify({content: op.content, encoding: 'base64'})});
@@ -111,8 +112,8 @@ async function loadFiles() {
   const tree = await gh(`/git/trees/${BRANCH}?recursive=1`);
   files = {};
   tree.tree.filter(x => x.type === 'blob' && x.path.startsWith('photos/'))
-    .forEach(x => { const [, art, f] = x.path.split('/'); (files[art] ||= []).push(f); });
-  Object.values(files).forEach(a => a.sort());
+    .forEach(x => { const [, art, f] = x.path.split('/'); (files[art] ||= []).push({f, sha: x.sha}); });
+  Object.values(files).forEach(a => a.sort((a, b) => a.f.localeCompare(b.f)));
 }
 
 const raw = (art, f) => `https://raw.githubusercontent.com/${REPO}/${BRANCH}/photos/${art}/${f}`;
@@ -131,7 +132,7 @@ function draw() {
       <div class="hd"><b>${t.name}</b><span class="art">${t.art}</span>
         <span class="meta">${t.format} · ${t.surface} · ${ph.length} фото</span></div>
       <div class="shots">
-        ${ph.map((f, i) => `<div class="shot ${i ? '' : 'cover'}">
+        ${ph.map(({f}, i) => `<div class="shot ${i ? '' : 'cover'}">
           <img src="${raw(t.art, f)}" alt="" loading="lazy">
           ${i ? '' : '<span class="badge">обложка</span>'}
           <div class="ops">
@@ -147,21 +148,17 @@ function draw() {
 
 /** Перекладывает фото артикула в новый порядок: имена 01..NN. */
 async function reorder(art, order) {
-  const ops = (files[art] || []).map(f => ({path: `photos/${art}/${f}`, remove: true}));
-  const blobs = await Promise.all(order.map(async (f, i) => {
-    const r = await fetch(raw(art, f)); const buf = new Uint8Array(await r.arrayBuffer());
-    let bin = ''; buf.forEach(b => bin += String.fromCharCode(b));
-    return {path: `photos/${art}/${String(i + 1).padStart(2, '0')}.jpg`, content: btoa(bin)};
-  }));
-  await commit(`Порядок фото ${art}`, [...ops, ...blobs]);
-  files[art] = blobs.map(b => b.path.split('/')[2]);
+  const dels = (files[art] || []).map(p => ({path: `photos/${art}/${p.f}`, remove: true}));
+  const adds = order.map((p, i) => ({path: `photos/${art}/${String(i + 1).padStart(2, '0')}.jpg`, sha: p.sha}));
+  await commit(`Порядок фото ${art}`, [...dels, ...adds]);
+  files[art] = adds.map(a => ({f: a.path.split('/')[2], sha: a.sha}));
   draw();
 }
 
 $('#list').addEventListener('click', async e => {
   const b = e.target.closest('button[data-act]'); if (!b) return;
   const art = b.closest('.tile').dataset.art, f = b.dataset.f;
-  const ph = [...files[art]], i = ph.indexOf(f);
+  const ph = [...(files[art] || [])], i = ph.findIndex(p => p.f === f), item = ph[i];
   try {
     b.disabled = true;
     if (b.dataset.act === 'del') {
@@ -172,7 +169,7 @@ $('#list').addEventListener('click', async e => {
     } else {
       msg('Меняю порядок…', true);
       ph.splice(i, 1);
-      ph.splice(b.dataset.act === 'cover' ? 0 : b.dataset.act === 'left' ? i - 1 : i + 1, 0, f);
+      ph.splice(b.dataset.act === 'cover' ? 0 : b.dataset.act === 'left' ? i - 1 : i + 1, 0, item);
       await reorder(art, ph);
     }
     msg('Готово. Сайт обновится через 1–2 минуты.');
@@ -189,7 +186,7 @@ $('#list').addEventListener('change', async e => {
     for (const [i, file] of [...e.target.files].entries())
       ops.push({path: `photos/${art}/${String(start + i + 1).padStart(2, '0')}.jpg`, content: await shrink(file)});
     await commit(`Фото ${art}`, ops);
-    files[art] = [...(files[art] || []), ...ops.map(o => o.path.split('/')[2])].sort();
+    await loadFiles();
     draw();
     msg('Загружено. Сайт обновится через 1–2 минуты.');
   } catch (err) { msg('Ошибка: ' + err.message); }
