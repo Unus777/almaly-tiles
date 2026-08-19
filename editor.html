@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Редактор медиа — Алмалы-Керамик</title>
+<style>
+:root{--bg:#0f1113;--card:#17191c;--line:#26292e;--tx:#f2f0ed;--dim:#9aa0a6;--accent:#c9a227}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 -apple-system,BlinkMacSystemFont,Arial,sans-serif}
+header{position:sticky;top:0;z-index:5;background:rgba(15,17,19,.95);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);padding:14px 24px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+h1{font-size:15px;letter-spacing:.12em;text-transform:uppercase;margin:0}
+input[type=search],select{background:var(--card);border:1px solid var(--line);color:var(--tx);
+  padding:9px 12px;border-radius:9px;font-size:14px}
+input[type=search]{min-width:240px}
+button{background:var(--card);border:1px solid var(--line);color:var(--tx);padding:9px 14px;
+  border-radius:9px;font-size:14px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.main{background:var(--accent);border-color:var(--accent);color:#191919;font-weight:600}
+button:disabled{opacity:.5;cursor:default}
+main{padding:20px 24px 60px;display:grid;gap:14px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.h{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.h b{font-size:16px}
+.art{font-family:ui-monospace,Menlo,monospace;color:var(--accent);font-size:13px}
+.dim{color:var(--dim);font-size:13px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:flex-start}
+.ph{width:120px;position:relative}
+.ph img{width:120px;height:160px;object-fit:cover;border-radius:8px;border:2px solid transparent;background:#101214}
+.ph.cover img{border-color:var(--accent)}
+.ops{display:flex;gap:4px;margin-top:5px}
+.ops button{padding:3px 7px;font-size:12px;line-height:1.2}
+.badge{position:absolute;top:8px;left:8px;background:var(--accent);color:#191919;font-size:11px;
+  font-weight:700;border-radius:5px;padding:1px 6px}
+.drop{width:120px;height:160px;border:2px dashed var(--line);border-radius:8px;display:flex;
+  align-items:center;justify-content:center;text-align:center;color:var(--dim);font-size:12px;
+  cursor:pointer;padding:8px}
+.drop.over{border-color:var(--accent);color:var(--accent)}
+#log{white-space:pre-wrap;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--dim);
+  padding:0 24px 30px;margin:0}
+</style>
+
+<header>
+  <h1>Редактор медиа</h1>
+  <input type="search" id="q" placeholder="Поиск: название или артикул">
+  <select id="only">
+    <option value="">Все модели</option>
+    <option value="no">Только без фото</option>
+    <option value="yes">Только с фото</option>
+  </select>
+  <span class="dim" id="stat"></span>
+  <span style="margin-left:auto"></span>
+  <a href="https://unus777.github.io/almaly-tiles/" target="_blank"><button>Открыть сайт</button></a>
+  <button class="main" id="pub">Опубликовать изменения</button>
+</header>
+
+<main id="list"></main>
+<pre id="log"></pre>
+
+<script>
+const $ = s => document.querySelector(s);
+let tiles = [];
+
+const api = (path, opts) => fetch(path, opts).then(r => r.json()).then(d => {
+  if (d.error) { alert('Ошибка: ' + d.error); throw new Error(d.error); }
+  return d;
+});
+
+async function load() {
+  tiles = (await api('/api/tiles')).tiles;
+  draw();
+}
+
+function draw() {
+  const s = $('#q').value.trim().toLowerCase(), only = $('#only').value;
+  const list = tiles.filter(t =>
+    (!s || (t.name + ' ' + t.art).toLowerCase().includes(s)) &&
+    (!only || (only === 'yes') === (t.photos.length > 0)));
+  $('#stat').textContent = `${list.length} из ${tiles.length} · с фото ${tiles.filter(t => t.photos.length).length}`;
+  $('#list').innerHTML = list.map(t => `
+    <section class="tile" data-art="${t.art}">
+      <div class="h"><b>${t.name}</b><span class="art">${t.art}</span>
+        <span class="dim">${t.format} · ${t.surface} · ${t.photos.length} фото</span></div>
+      <div class="row">
+        ${t.photos.map((f, i) => `
+          <div class="ph ${i === 0 ? 'cover' : ''}">
+            <img src="/api/photo?art=${t.art}&f=${f}&v=${Date.now()}" alt="">
+            ${i === 0 ? '<span class="badge">обложка</span>' : ''}
+            <div class="ops">
+              <button data-act="left" data-f="${f}" ${i === 0 ? 'disabled' : ''} title="Левее">←</button>
+              <button data-act="right" data-f="${f}" ${i === t.photos.length - 1 ? 'disabled' : ''} title="Правее">→</button>
+              <button data-act="cover" data-f="${f}" ${i === 0 ? 'disabled' : ''} title="Сделать обложкой">★</button>
+              <button data-act="del" data-f="${f}" title="Удалить">✕</button>
+            </div>
+          </div>`).join('')}
+        <label class="drop">+ добавить фото<input type="file" accept="image/*" multiple hidden></label>
+      </div>
+    </section>`).join('') || '<p class="dim">Ничего не найдено.</p>';
+}
+
+async function refresh(art, photos) {
+  tiles.find(t => t.art === art).photos = photos;
+  draw();
+}
+
+$('#list').addEventListener('click', async e => {
+  const b = e.target.closest('button[data-act]');
+  if (!b) return;
+  const art = b.closest('.tile').dataset.art, f = b.dataset.f;
+  const t = tiles.find(x => x.art === art), i = t.photos.indexOf(f);
+  if (b.dataset.act === 'del') {
+    if (!confirm(`Удалить фото ${f} у ${art}?`)) return;
+    return refresh(art, (await api('/api/delete', {method: 'POST', body: JSON.stringify({art, file: f})})).photos);
+  }
+  const order = [...t.photos];
+  order.splice(i, 1);
+  order.splice(b.dataset.act === 'cover' ? 0 : b.dataset.act === 'left' ? i - 1 : i + 1, 0, f);
+  refresh(art, (await api('/api/order', {method: 'POST', body: JSON.stringify({art, order})})).photos);
+});
+
+async function upload(art, files) {
+  let photos;
+  for (const file of files)
+    photos = (await api(`/api/upload?art=${art}&name=${encodeURIComponent(file.name)}`,
+      {method: 'POST', body: file})).photos;
+  if (photos) refresh(art, photos);
+}
+
+$('#list').addEventListener('change', e => {
+  if (e.target.type === 'file' && e.target.files.length)
+    upload(e.target.closest('.tile').dataset.art, e.target.files);
+});
+
+// перетаскивание файлов на плашку «+ добавить фото»
+$('#list').addEventListener('dragover', e => {
+  const d = e.target.closest('.drop'); if (!d) return;
+  e.preventDefault(); d.classList.add('over');
+});
+$('#list').addEventListener('dragleave', e => e.target.closest('.drop')?.classList.remove('over'));
+$('#list').addEventListener('drop', e => {
+  const d = e.target.closest('.drop'); if (!d) return;
+  e.preventDefault(); d.classList.remove('over');
+  upload(d.closest('.tile').dataset.art, e.dataTransfer.files);
+});
+
+$('#pub').addEventListener('click', async () => {
+  const b = $('#pub');
+  b.disabled = true; b.textContent = 'Публикую…'; $('#log').textContent = '';
+  const r = await api('/api/publish', {method: 'POST'});
+  $('#log').textContent = r.log;
+  b.disabled = false; b.textContent = r.ok ? 'Опубликовано ✓' : 'Ошибка — см. лог';
+  setTimeout(() => b.textContent = 'Опубликовать изменения', 4000);
+});
+
+[$('#q'), $('#only')].forEach(el => el.addEventListener('input', draw));
+load();
+</script>
