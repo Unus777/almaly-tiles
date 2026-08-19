@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Редактор медиа — Алмалы-Керамик</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:18px 0}
+  .bar input[type=password]{flex:1;min-width:240px;background:var(--card);border:1px solid var(--line);
+    color:var(--tx);padding:11px 14px;border-radius:10px;font-size:15px}
+  button{background:var(--card);border:1px solid var(--line);color:var(--tx);padding:10px 14px;
+    border-radius:10px;font-size:14px;cursor:pointer}
+  button:hover{border-color:var(--accent)}
+  button.main{background:var(--accent);border-color:var(--accent);color:#191919;font-weight:600}
+  button:disabled{opacity:.5;cursor:default}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+  .hd{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+  .hd b{font-size:16px}
+  .shots{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .shot{width:110px;position:relative}
+  .shot img{width:110px;height:146px;object-fit:cover;border-radius:8px;background:#101214;
+    border:2px solid transparent}
+  .shot.cover img{border-color:var(--accent)}
+  .badge{position:absolute;top:8px;left:8px;background:var(--accent);color:#191919;font-size:11px;
+    font-weight:700;border-radius:5px;padding:1px 6px}
+  .ops{display:flex;gap:4px;margin-top:5px}
+  .ops button{padding:3px 7px;font-size:12px}
+  .drop{width:110px;height:146px;border:2px dashed var(--line);border-radius:8px;display:flex;
+    align-items:center;justify-content:center;text-align:center;color:var(--dim);font-size:12px;cursor:pointer;padding:8px}
+  #msg{position:fixed;left:0;right:0;bottom:0;background:#1c1f23;border-top:1px solid var(--line);
+    padding:10px 20px;font-size:14px;color:var(--dim);display:none}
+  .hint{color:var(--dim);font-size:13px;margin:0 0 8px}
+  .hint a{color:var(--accent)}
+</style>
+
+<header><div class="wrap head">
+  <a class="logo" href="index.html">Алмалы<span>·</span>Керамик</a>
+  <span class="sub">Редактор медиа</span>
+</div></header>
+
+<main class="wrap">
+  <div class="bar" id="auth">
+    <input type="password" id="token" placeholder="GitHub-токен с правом Contents: read and write" autocomplete="off">
+    <button class="main" id="login">Войти</button>
+    <button id="logout" hidden>Выйти</button>
+  </div>
+  <p class="hint" id="hint">Токен хранится только в этом браузере и никуда больше не отправляется, кроме GitHub.
+    Создать: <a href="https://github.com/settings/personal-access-tokens" target="_blank">Fine-grained token</a>
+    → доступ к репозиторию <b>almaly-tiles</b> → Repository permissions → Contents: Read and write.</p>
+
+  <div class="tools" id="tools" hidden>
+    <input type="search" id="q" placeholder="Поиск: название или артикул" aria-label="Поиск">
+    <select id="only"><option value="">Все модели</option><option value="no">Без фото</option><option value="yes">С фото</option></select>
+    <span class="count" id="count"></span>
+  </div>
+  <div id="list"></div>
+</main>
+<div id="msg"></div>
+
+<script>
+const REPO = 'Unus777/almaly-tiles', BRANCH = 'main';
+const $ = s => document.querySelector(s);
+let token = localStorage.getItem('gh_token') || '', tiles = [], files = {};
+
+const msg = (t, keep) => { const m = $('#msg'); m.textContent = t; m.style.display = t ? 'block' : 'none';
+  if (t && !keep) setTimeout(() => { if (m.textContent === t) m.style.display = 'none'; }, 4000); };
+
+async function gh(path, opts = {}) {
+  const r = await fetch(`https://api.github.com/repos/${REPO}${path}`, {
+    ...opts, headers: {Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', ...opts.headers}});
+  const d = r.status === 204 ? {} : await r.json();
+  if (!r.ok) throw new Error(d.message || r.status);
+  return d;
+}
+
+/** Уменьшает фото до 1600px и отдаёт base64 без префикса. */
+const shrink = file => new Promise((res, rej) => {
+  const img = new Image();
+  img.onload = () => {
+    const k = Math.min(1, 1600 / Math.max(img.width, img.height));
+    const c = document.createElement('canvas');
+    c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    res(c.toDataURL('image/jpeg', .85).split(',')[1]);
+  };
+  img.onerror = rej;
+  img.src = URL.createObjectURL(file);
+});
+
+/** Один коммит с набором операций: [{path, content}] и [{path: null-удалить}]. */
+async function commit(message, ops) {
+  const head = await gh(`/git/refs/heads/${BRANCH}`);
+  const base = await gh(`/git/commits/${head.object.sha}`);
+  const tree = [];
+  for (const op of ops) {
+    if (op.remove) tree.push({path: op.path, mode: '100644', type: 'blob', sha: null});
+    else {
+      const blob = await gh('/git/blobs', {method: 'POST',
+        body: JSON.stringify({content: op.content, encoding: 'base64'})});
+      tree.push({path: op.path, mode: '100644', type: 'blob', sha: blob.sha});
+    }
+  }
+  const t = await gh('/git/trees', {method: 'POST',
+    body: JSON.stringify({base_tree: base.tree.sha, tree})});
+  const c = await gh('/git/commits', {method: 'POST',
+    body: JSON.stringify({message, tree: t.sha, parents: [head.object.sha]})});
+  await gh(`/git/refs/heads/${BRANCH}`, {method: 'PATCH', body: JSON.stringify({sha: c.sha})});
+}
+
+async function loadFiles() {
+  const tree = await gh(`/git/trees/${BRANCH}?recursive=1`);
+  files = {};
+  tree.tree.filter(x => x.type === 'blob' && x.path.startsWith('photos/'))
+    .forEach(x => { const [, art, f] = x.path.split('/'); (files[art] ||= []).push(f); });
+  Object.values(files).forEach(a => a.sort());
+}
+
+const raw = (art, f) => `https://raw.githubusercontent.com/${REPO}/${BRANCH}/photos/${art}/${f}`;
+
+function draw() {
+  const s = $('#q').value.trim().toLowerCase(), only = $('#only').value;
+  const list = tiles.filter(t => {
+    const ph = files[t.art] || [];
+    return (!s || (t.name + ' ' + t.art).toLowerCase().includes(s)) &&
+           (!only || (only === 'yes') === (ph.length > 0));
+  });
+  $('#count').textContent = `${list.length} из ${tiles.length}`;
+  $('#list').innerHTML = list.map(t => {
+    const ph = files[t.art] || [];
+    return `<section class="tile" data-art="${t.art}">
+      <div class="hd"><b>${t.name}</b><span class="art">${t.art}</span>
+        <span class="meta">${t.format} · ${t.surface} · ${ph.length} фото</span></div>
+      <div class="shots">
+        ${ph.map((f, i) => `<div class="shot ${i ? '' : 'cover'}">
+          <img src="${raw(t.art, f)}" alt="" loading="lazy">
+          ${i ? '' : '<span class="badge">обложка</span>'}
+          <div class="ops">
+            <button data-act="left" data-f="${f}" ${i ? '' : 'disabled'}>←</button>
+            <button data-act="right" data-f="${f}" ${i === ph.length - 1 ? 'disabled' : ''}>→</button>
+            <button data-act="cover" data-f="${f}" ${i ? '' : 'disabled'}>★</button>
+            <button data-act="del" data-f="${f}">✕</button>
+          </div></div>`).join('')}
+        <label class="drop">+ добавить фото<input type="file" accept="image/*" multiple hidden></label>
+      </div></section>`;
+  }).join('') || '<p class="meta">Ничего не найдено.</p>';
+}
+
+/** Перекладывает фото артикула в новый порядок: имена 01..NN. */
+async function reorder(art, order) {
+  const ops = (files[art] || []).map(f => ({path: `photos/${art}/${f}`, remove: true}));
+  const blobs = await Promise.all(order.map(async (f, i) => {
+    const r = await fetch(raw(art, f)); const buf = new Uint8Array(await r.arrayBuffer());
+    let bin = ''; buf.forEach(b => bin += String.fromCharCode(b));
+    return {path: `photos/${art}/${String(i + 1).padStart(2, '0')}.jpg`, content: btoa(bin)};
+  }));
+  await commit(`Порядок фото ${art}`, [...ops, ...blobs]);
+  files[art] = blobs.map(b => b.path.split('/')[2]);
+  draw();
+}
+
+$('#list').addEventListener('click', async e => {
+  const b = e.target.closest('button[data-act]'); if (!b) return;
+  const art = b.closest('.tile').dataset.art, f = b.dataset.f;
+  const ph = [...files[art]], i = ph.indexOf(f);
+  try {
+    b.disabled = true;
+    if (b.dataset.act === 'del') {
+      if (!confirm(`Удалить это фото у ${art}?`)) return;
+      msg('Удаляю…', true);
+      ph.splice(i, 1);
+      await reorder(art, ph);
+    } else {
+      msg('Меняю порядок…', true);
+      ph.splice(i, 1);
+      ph.splice(b.dataset.act === 'cover' ? 0 : b.dataset.act === 'left' ? i - 1 : i + 1, 0, f);
+      await reorder(art, ph);
+    }
+    msg('Готово. Сайт обновится через 1–2 минуты.');
+  } catch (err) { msg('Ошибка: ' + err.message); } finally { b.disabled = false; }
+});
+
+$('#list').addEventListener('change', async e => {
+  if (e.target.type !== 'file' || !e.target.files.length) return;
+  const art = e.target.closest('.tile').dataset.art;
+  try {
+    msg('Загружаю фото…', true);
+    const start = (files[art] || []).length;
+    const ops = [];
+    for (const [i, file] of [...e.target.files].entries())
+      ops.push({path: `photos/${art}/${String(start + i + 1).padStart(2, '0')}.jpg`, content: await shrink(file)});
+    await commit(`Фото ${art}`, ops);
+    files[art] = [...(files[art] || []), ...ops.map(o => o.path.split('/')[2])].sort();
+    draw();
+    msg('Загружено. Сайт обновится через 1–2 минуты.');
+  } catch (err) { msg('Ошибка: ' + err.message); }
+});
+
+async function start() {
+  try {
+    msg('Загружаю каталог…', true);
+    tiles = (await fetch('data.json?v=' + Date.now()).then(r => r.json())).tiles;
+    await loadFiles();
+    $('#tools').hidden = false; $('#hint').hidden = true;
+    $('#token').hidden = true; $('#login').hidden = true; $('#logout').hidden = false;
+    ['q', 'only'].forEach(id => $('#' + id).addEventListener('input', draw));
+    draw(); msg('');
+  } catch (err) { msg('Не получилось войти: ' + err.message); }
+}
+
+$('#login').addEventListener('click', () => {
+  token = $('#token').value.trim();
+  if (!token) return msg('Вставь токен');
+  localStorage.setItem('gh_token', token); start();
+});
+$('#logout').addEventListener('click', () => { localStorage.removeItem('gh_token'); location.reload(); });
+if (token) start();
+</script>

@@ -1,0 +1,30 @@
+name: Пересборка каталога
+
+on:
+  push:
+    paths: ["photos/**", "build.py", "config.json"]
+  schedule:
+    - cron: "0 4 * * *"        # ежедневно тянем свежие остатки из таблицы
+  workflow_dispatch:
+
+concurrency: build-catalog
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install --quiet pillow qrcode
+      - run: python sync_sheet.py
+      - run: python build.py
+      - name: Закоммитить сайт
+        run: |
+          git config user.name "almaly-bot"
+          git config user.email "actions@github.com"
+          git add docs qr
+          git diff --cached --quiet || git commit -m "Пересборка каталога [skip ci]"
+          git push

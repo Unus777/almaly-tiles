@@ -19,7 +19,10 @@ BASE = CFG["base_url"].rstrip("/")
 
 FULL_W, THUMB_W = 1600, 700
 EXT = {".jpg", ".jpeg", ".png", ".webp"}
-FONT = "/System/Library/Fonts/Supplemental/Arial Unicode.ttf"
+FONT = next(f for f in ("/System/Library/Fonts/Supplemental/Arial Unicode.ttf",
+                        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")
+            if Path(f).exists())
 
 SURFACE = {"ГЛ": "Глянец", "MT": "Матовая", "МТ": "Матовая", "САТИН": "Сатин",
            "КАРВИНГ": "Карвинг", "ПАНЧ КАРВИНГ": "Панч-карвинг"}
