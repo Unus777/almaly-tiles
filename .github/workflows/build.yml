@@ -26,5 +26,10 @@ jobs:
           git config user.name "almaly-bot"
           git config user.email "actions@github.com"
           git add docs qr
-          git diff --cached --quiet || git commit -m "Пересборка каталога [skip ci]"
-          git push
+          git diff --cached --quiet && exit 0
+          git commit -m "Пересборка каталога [skip ci]"
+          for i in 1 2 3; do
+            git pull --rebase --autostash origin main && git push && exit 0
+            sleep 5
+          done
+          exit 1
