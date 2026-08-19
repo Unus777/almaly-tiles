@@ -1,0 +1,125 @@
+#!/usr/bin/env python3
+"""Собирает сайт-каталог плитки и QR-коды.
+
+Как добавить фото: положить файлы в photos/<АРТИКУЛ>/ и запустить `python3 build.py`.
+Порядок фото — по имени файла (01, 02, ...). Первое фото становится обложкой.
+"""
+import csv, json, shutil, textwrap, unicodedata
+from pathlib import Path
+
+import qrcode
+from qrcode.constants import ERROR_CORRECT_H
+from PIL import Image, ImageDraw, ImageFont, ImageOps
+
+ROOT = Path(__file__).parent
+SITE, QR = ROOT / "site", ROOT / "qr"
+PHOTOS = ROOT / "photos"
+CFG = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
+BASE = CFG["base_url"].rstrip("/")
+
+FULL_W, THUMB_W = 1600, 700
+EXT = {".jpg", ".jpeg", ".png", ".webp"}
+FONT = "/System/Library/Fonts/Supplemental/Arial Unicode.ttf"
+
+SURFACE = {"ГЛ": "Глянец", "MT": "Матовая", "МТ": "Матовая", "САТИН": "Сатин",
+           "КАРВИНГ": "Карвинг", "ПАНЧ КАРВИНГ": "Панч-карвинг"}
+
+
+def norm(s):
+    return " ".join(unicodedata.normalize("NFC", s).upper().replace("Ё", "Е").split())
+
+
+def catalog():
+    """Только рабочие артикулы с названием."""
+    tiles = []
+    for f in sorted((ROOT / "data").glob("*.csv")):
+        for row in csv.DictReader(f.open(encoding="utf-8")):
+            art, name = row["Артикулы"].strip(), norm(row["НАЗВАНИЯ"])
+            if not art or not name or "рабочий" not in row["Статус арт."].lower():
+                continue
+            fmt = norm(row["ФОРМАТ"]).replace("Х", "X").replace("X", "×")
+            tiles.append({
+                "art": art,
+                "name": name.title(),
+                "format": fmt,
+                "surface": SURFACE.get(norm(row["ПОКРЫТИЕ"]), row["ПОКРЫТИЕ"].strip().title()),
+                "packing": row["ПАКИНГ"].strip(),
+                "pallet": row["ПАЛЛЕТ М2/КГ"].strip(),
+                "url": f"{BASE}/tile.html?a={art}",
+            })
+    tiles.sort(key=lambda t: (t["format"], t["name"]))
+    return tiles
+
+
+def make_images(tile):
+    """Ресайз фото артикула в site/img/<арт>/. Возвращает список имён."""
+    src_dir = PHOTOS / tile["art"]
+    src_dir.mkdir(parents=True, exist_ok=True)          # чтобы было куда класть фото
+    out_dir = SITE / "img" / tile["art"]
+    names = []
+    for i, src in enumerate(sorted(p for p in src_dir.iterdir() if p.suffix.lower() in EXT), 1):
+        out_dir.mkdir(parents=True, exist_ok=True)
+        base = f"{i:02d}"
+        full, thumb = out_dir / f"{base}.jpg", out_dir / f"{base}_t.jpg"
+        if not full.exists() or full.stat().st_mtime < src.stat().st_mtime:
+            im = ImageOps.exif_transpose(Image.open(src)).convert("RGB")
+            big = im.copy(); big.thumbnail((FULL_W, FULL_W), Image.LANCZOS)
+            big.save(full, "JPEG", quality=82, optimize=True, progressive=True)
+            small = im.copy(); small.thumbnail((THUMB_W, THUMB_W), Image.LANCZOS)
+            small.save(thumb, "JPEG", quality=78, optimize=True, progressive=True)
+        names.append(base)
+    return names
+
+
+def make_qr(tile):
+    """QR с подписью «название + артикул» в центре."""
+    qr = qrcode.QRCode(version=None, error_correction=ERROR_CORRECT_H, box_size=16, border=2)
+    qr.add_data(tile["url"]); qr.make(fit=True)
+    img = qr.make_image(fill_color="#111111", back_color="white").convert("RGB")
+    w, h = img.size
+
+    box_w, box_h = int(w * 0.34), int(h * 0.20)
+    x0, y0 = (w - box_w) // 2, (h - box_h) // 2
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle([x0, y0, x0 + box_w, y0 + box_h], radius=box_h // 6,
+                        fill="white", outline="#111111", width=max(2, w // 300))
+
+    lines = textwrap.wrap(tile["name"].upper(), width=14) or [""]
+    lines = lines[:2] + [tile["art"]]
+    size = int(box_h / (len(lines) + 1.6))
+    while True:
+        font = ImageFont.truetype(FONT, size)
+        if max(d.textlength(t, font=font) for t in lines) <= box_w * 0.86 or size <= 8:
+            break
+        size -= 2
+    small = ImageFont.truetype(FONT, max(8, int(size * 0.82)))
+    fonts = [font] * (len(lines) - 1) + [small]
+    gap = int(size * 0.28)
+    total = sum(f.size for f in fonts) + gap * (len(lines) - 1)
+    y = y0 + (box_h - total) // 2
+    for text, f in zip(lines, fonts):
+        d.text((w // 2, y), text, font=f, fill="#111111", anchor="ma")
+        y += f.size + gap
+
+    QR.mkdir(exist_ok=True)
+    img.resize((1000, 1000), Image.LANCZOS).save(QR / f"{tile['art']}.png", "PNG")
+
+
+def main():
+    tiles = catalog()
+    for t in tiles:
+        t["photos"] = make_images(t)
+        make_qr(t)
+    (SITE / "data.json").write_text(
+        json.dumps({"base": BASE, "tiles": tiles}, ensure_ascii=False, indent=1), encoding="utf-8")
+    shutil.copytree(QR, SITE / "qr", dirs_exist_ok=True)   # QR доступны и с сайта
+
+    with_photo = sum(1 for t in tiles if t["photos"])
+    print(f"Плиток: {len(tiles)} | с фото: {with_photo} | без фото: {len(tiles) - with_photo}")
+    empty = [t["art"] for t in tiles if not t["photos"]]
+    if empty:
+        print("Ждут фото (папки созданы в photos/):", ", ".join(empty))
+
+
+if __name__ == "__main__":
+    main()

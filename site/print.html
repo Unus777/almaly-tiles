@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QR-коды для печати — Алмалы-Керамик</title>
+<style>
+  body{font:14px/1.4 -apple-system,Arial,sans-serif;margin:24px;color:#111;background:#fff}
+  h1{font-size:20px} .note{color:#666;margin-bottom:20px}
+  .g{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .i{border:1px solid #ddd;border-radius:10px;padding:12px;text-align:center;break-inside:avoid}
+  .i img{width:100%} .n{font-weight:600;margin-top:6px} .a{color:#666;font-size:12px}
+  @media print{body{margin:0}.note,h1{display:none}.g{gap:10px}}
+</style>
+<h1>QR-коды моделей</h1>
+<p class="note">Печать: ⌘P. Каждый код ведёт на страницу своей модели.</p>
+<div class="g" id="g"></div>
+<script>
+fetch('data.json').then(r=>r.json()).then(({tiles})=>{
+  document.getElementById('g').innerHTML = tiles.map(t=>`
+    <div class="i"><img src="qr/${t.art}.png" alt=""><div class="n">${t.name}</div>
+    <div class="a">${t.art} · ${t.format}</div></div>`).join('');
+});
+</script>
