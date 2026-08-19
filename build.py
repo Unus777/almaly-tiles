@@ -29,6 +29,14 @@ def norm(s):
     return " ".join(unicodedata.normalize("NFC", s).upper().replace("Ё", "Е").split())
 
 
+def num(v):
+    """«174,96» / «1 328,4» / пусто -> float."""
+    try:
+        return float(v.replace("\xa0", "").replace(" ", "").replace(",", "."))
+    except (ValueError, AttributeError):
+        return 0.0
+
+
 def catalog():
     """Только рабочие артикулы с названием."""
     tiles = []
@@ -38,11 +46,9 @@ def catalog():
             if not art or not name or "рабочий" not in row["Статус арт."].lower():
                 continue
             fmt = norm(row["ФОРМАТ"]).replace("Х", "X").replace("X", "×")
-            stock = row["СКЛАД Москва"].replace("\xa0", "").replace(" ", "").replace(",", ".")
-            try:
-                stock = float(stock)
-            except ValueError:
-                stock = 0.0
+            stock = {k: num(row[c]) for k, c in (
+                ("msk", "СКЛАД Москва"), ("tver", "СКЛАД Тверь"),
+                ("msk_res", "РЕЗЕРВ Москва"), ("tver_res", "РЕЗЕРВ Тверь"))}
             tiles.append({
                 "art": art,
                 "name": name.title(),
@@ -50,7 +56,7 @@ def catalog():
                 "surface": SURFACE.get(norm(row["ПОКРЫТИЕ"]), row["ПОКРЫТИЕ"].strip().title()),
                 "packing": row["ПАКИНГ"].strip(),
                 "pallet": row["ПАЛЛЕТ М2/КГ"].strip(),
-                "in_stock": stock > 0,
+                "stock": stock,
                 "url": f"{BASE}/tile.html?a={art}",
             })
     tiles.sort(key=lambda t: (t["format"], t["name"]))
@@ -122,7 +128,7 @@ def main():
 
     with_photo = sum(1 for t in tiles if t["photos"])
     print(f"Плиток: {len(tiles)} | с фото: {with_photo} | без фото: {len(tiles) - with_photo} "
-          f"| в наличии (Москва): {sum(1 for t in tiles if t['in_stock'])}")
+          f"| в наличии (Москва): {sum(1 for t in tiles if t['stock']['msk'] > 0)}")
     empty = [t["art"] for t in tiles if not t["photos"]]
     if empty:
         print("Ждут фото (папки созданы в photos/):", ", ".join(empty))

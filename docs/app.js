@@ -1,13 +1,13 @@
 const load = fetch('data.json').then(r => r.json());
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const m2 = v => v > 0 ? v.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' м²' : '—';
 const cover = t => t.photos.length
   ? `<img src="img/${t.art}/${t.photos[0]}_t.jpg" alt="${esc(t.name)}" loading="lazy">`
   : 'фото скоро';
 
 async function renderCatalog() {
   const { tiles } = await load;
-  const [q, fmt, srf, stock, grid, count] =
-    ['q','fmt','srf','stock','grid','count'].map(id => document.getElementById(id));
+  const [q, fmt, srf, grid, count] = ['q','fmt','srf','grid','count'].map(id => document.getElementById(id));
   const fill = (sel, key) => [...new Set(tiles.map(t => t[key]))].sort()
     .forEach(v => sel.add(new Option(v, v)));
   fill(fmt, 'format'); fill(srf, 'surface');
@@ -17,7 +17,6 @@ async function renderCatalog() {
     const list = tiles.filter(t =>
       (!fmt.value || t.format === fmt.value) &&
       (!srf.value || t.surface === srf.value) &&
-      (!stock.checked || t.in_stock) &&
       (!s || (t.name + ' ' + t.art).toLowerCase().includes(s)));
     grid.innerHTML = list.map(t => `
       <a class="card" href="tile.html?a=${t.art}">
@@ -25,13 +24,16 @@ async function renderCatalog() {
         <div class="b">
           <h3>${esc(t.name)}</h3>
           <div class="art">${t.art}</div>
-          <div class="meta"><span class="tag">${t.format}</span><span class="tag">${esc(t.surface)}</span>
-            ${t.in_stock ? '<span class="tag ok">В наличии</span>' : '<span class="tag off">Под заказ</span>'}</div>
+          <div class="meta"><span class="tag">${t.format}</span><span class="tag">${esc(t.surface)}</span></div>
+          <div class="stock">
+            <span>Москва <b class="${t.stock.msk > 0 ? 'ok' : 'off'}">${m2(t.stock.msk)}</b></span>
+            <span>Тверь <b class="${t.stock.tver > 0 ? 'ok' : 'off'}">${m2(t.stock.tver)}</b></span>
+          </div>
         </div>
       </a>`).join('') || '<p style="color:var(--dim)">Ничего не найдено.</p>';
     count.textContent = `${list.length} из ${tiles.length}`;
   };
-  [q, fmt, srf, stock].forEach(el => el.addEventListener('input', draw));
+  [q, fmt, srf].forEach(el => el.addEventListener('input', draw));
   draw();
   document.getElementById('stat').textContent =
     `${tiles.length} моделей, ${tiles.filter(t => t.photos.length).length} с фотографиями`;
@@ -64,7 +66,14 @@ async function renderTile() {
           <tr><th>Поверхность</th><td>${esc(t.surface)}</td></tr>
           <tr><th>Упаковка</th><td>${esc(t.packing)}</td></tr>
           <tr><th>Паллета</th><td>${esc(t.pallet)}</td></tr>
-          <tr><th>Наличие</th><td>${t.in_stock ? 'Есть на складе Москва' : 'Под заказ'}</td></tr>
+        </table>
+        <h2 class="h2">Остатки</h2>
+        <table class="spec">
+          <tr><th>Склад Москва</th><td>${m2(t.stock.msk)}</td></tr>
+          <tr><th>Резерв Москва</th><td>${m2(t.stock.msk_res)}</td></tr>
+          <tr><th>Склад Тверь</th><td>${m2(t.stock.tver)}</td></tr>
+          <tr><th>Резерв Тверь</th><td>${m2(t.stock.tver_res)}</td></tr>
+          <tr><th>Свободно всего</th><td><b>${m2(t.stock.msk + t.stock.tver - t.stock.msk_res - t.stock.tver_res)}</b></td></tr>
         </table>
         <img class="qr" src="qr/${t.art}.png" alt="QR-код модели ${t.art}">
         <a class="dl" href="qr/${t.art}.png" download>Скачать QR-код</a>
