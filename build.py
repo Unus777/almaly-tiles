@@ -38,6 +38,11 @@ def catalog():
             if not art or not name or "рабочий" not in row["Статус арт."].lower():
                 continue
             fmt = norm(row["ФОРМАТ"]).replace("Х", "X").replace("X", "×")
+            stock = row["СКЛАД Москва"].replace("\xa0", "").replace(" ", "").replace(",", ".")
+            try:
+                stock = float(stock)
+            except ValueError:
+                stock = 0.0
             tiles.append({
                 "art": art,
                 "name": name.title(),
@@ -45,6 +50,7 @@ def catalog():
                 "surface": SURFACE.get(norm(row["ПОКРЫТИЕ"]), row["ПОКРЫТИЕ"].strip().title()),
                 "packing": row["ПАКИНГ"].strip(),
                 "pallet": row["ПАЛЛЕТ М2/КГ"].strip(),
+                "in_stock": stock > 0,
                 "url": f"{BASE}/tile.html?a={art}",
             })
     tiles.sort(key=lambda t: (t["format"], t["name"]))
@@ -115,7 +121,8 @@ def main():
     shutil.copytree(QR, SITE / "qr", dirs_exist_ok=True)   # QR доступны и с сайта
 
     with_photo = sum(1 for t in tiles if t["photos"])
-    print(f"Плиток: {len(tiles)} | с фото: {with_photo} | без фото: {len(tiles) - with_photo}")
+    print(f"Плиток: {len(tiles)} | с фото: {with_photo} | без фото: {len(tiles) - with_photo} "
+          f"| в наличии (Москва): {sum(1 for t in tiles if t['in_stock'])}")
     empty = [t["art"] for t in tiles if not t["photos"]]
     if empty:
         print("Ждут фото (папки созданы в photos/):", ", ".join(empty))
