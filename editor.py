@@ -61,6 +61,8 @@ class Handler(BaseHTTPRequestHandler):
         q = urllib.parse.parse_qs(url.query)
         if url.path in ("/", "/index.html"):
             return self.send(200, (ROOT / "editor.html").read_bytes(), "text/html; charset=utf-8")
+        if url.path == "/dnd.js":
+            return self.send(200, (ROOT / "docs" / "dnd.js").read_bytes(), "application/javascript; charset=utf-8")
         if url.path == "/api/tiles":
             tiles = [{"art": t["art"], "name": t["name"], "format": t["format"],
                       "surface": t["surface"], "photos": photos_of(t["art"])}
