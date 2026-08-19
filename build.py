@@ -12,7 +12,7 @@ from qrcode.constants import ERROR_CORRECT_H
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 ROOT = Path(__file__).parent
-SITE, QR = ROOT / "site", ROOT / "qr"
+SITE, QR = ROOT / "docs", ROOT / "qr"
 PHOTOS = ROOT / "photos"
 CFG = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
 BASE = CFG["base_url"].rstrip("/")
