@@ -16,8 +16,8 @@
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHP612038",
    "photos": [
-    "01.36496d76",
-    "02.1a7a3d2a",
+    "01.1a7a3d2a",
+    "02.36496d76",
     "03.08b58888",
     "04.09cf420e",
     "05.732f207e",
@@ -40,8 +40,8 @@
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHP612098",
    "photos": [
-    "01.5456d233",
-    "02.dfbb87d1",
+    "01.dfbb87d1",
+    "02.5456d233",
     "03.ce25c001",
     "04.fdd85e7a",
     "05.1076ca49",
@@ -58,7 +58,7 @@
    "packing": "1 уп-2шт-1,44м2-27 кг",
    "pallet": "1пал-72м2-50уп-1350кг",
    "stock": {
-    "msk": 125.28,
+    "msk": 109.44,
     "tver": 501.84,
     "msk_res": 0.0,
     "tver_res": 0.0
@@ -140,9 +140,9 @@
    "packing": "1 уп-2шт-1,44м2-27 кг",
    "pallet": "1пал-72м2-50уп-1350кг",
    "stock": {
-    "msk": 110.16,
+    "msk": 9.36,
     "tver": 289.44,
-    "msk_res": 0.0,
+    "msk_res": 72.0,
     "tver_res": 0.0
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHP612826",
@@ -212,9 +212,9 @@
    "packing": "1 уп-2шт-1,44м2-27 кг",
    "pallet": "1пал-72м2-50уп-1350кг",
    "stock": {
-    "msk": 200.16,
+    "msk": 177.12,
     "tver": 36.0,
-    "msk_res": 0.0,
+    "msk_res": 23.04,
     "tver_res": 0.0
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHP612393",
@@ -469,10 +469,10 @@
    "packing": "1 уп-5 шт-1,8 м2-34кг",
    "pallet": "1пал-46,8м2-26 уп-884кг",
    "stock": {
-    "msk": 202.68,
-    "tver": 231.48,
-    "msk_res": 0.0,
-    "tver_res": 0.0
+    "msk": 0.0,
+    "tver": 0.0,
+    "msk_res": 202.68,
+    "tver_res": 231.48
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHP600813",
    "photos": [
@@ -750,7 +750,7 @@
    "pallet": "1пал-72м2-50уп-1350кг",
    "stock": {
     "msk": 7.2,
-    "tver": 47.52,
+    "tver": 0.0,
     "msk_res": 0.0,
     "tver_res": 0.0
    },
@@ -831,7 +831,7 @@
    "stock": {
     "msk": 153.36,
     "tver": 546.48,
-    "msk_res": 59.04,
+    "msk_res": 0.0,
     "tver_res": 0.0
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHP612887",
@@ -845,9 +845,9 @@
    "packing": "1 уп-2шт-1,44м2-27 кг",
    "pallet": "1пал-72м2-50уп-1350кг",
    "stock": {
-    "msk": 133.92,
+    "msk": 135.36,
     "tver": 1521.36,
-    "msk_res": 1.44,
+    "msk_res": 0.0,
     "tver_res": 0.0
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHP612808",
@@ -899,22 +899,6 @@
     "tver_res": 0.0
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHR612004",
-   "photos": []
-  },
-  {
-   "art": "VHM612807",
-   "name": "Стоун Грей",
-   "format": "60×120",
-   "surface": "Панч-карвинг",
-   "packing": "1 уп-2шт-1,44м2-27 кг",
-   "pallet": "1пал-72м2-50уп-1350кг",
-   "stock": {
-    "msk": 46.8,
-    "tver": 0.0,
-    "msk_res": 0.0,
-    "tver_res": 0.0
-   },
-   "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHM612807",
    "photos": []
   },
   {
@@ -1037,7 +1021,7 @@
    "packing": "1 уп-5 шт-1,8 м2-34кг",
    "pallet": "1пал-46,8м2-26 уп-884кг",
    "stock": {
-    "msk": 168.12,
+    "msk": 166.32,
     "tver": 453.6,
     "msk_res": 18.0,
     "tver_res": 0.0
@@ -1347,38 +1331,6 @@
     "tver_res": 0.0
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHF600032",
-   "photos": []
-  },
-  {
-   "art": "VHM600816",
-   "name": "Стоун Грей",
-   "format": "60×60",
-   "surface": "Панч-карвинг",
-   "packing": "1 уп-5 шт-1,8 м2-34кг",
-   "pallet": "1пал-46,8м2-26 уп-884кг",
-   "stock": {
-    "msk": 57.6,
-    "tver": 84.96,
-    "msk_res": 0.0,
-    "tver_res": 0.0
-   },
-   "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHM600816",
-   "photos": []
-  },
-  {
-   "art": "VHM600815",
-   "name": "Стоун Дарк",
-   "format": "60×60",
-   "surface": "Панч-карвинг",
-   "packing": "1 уп-5 шт-1,8 м2-34кг",
-   "pallet": "1пал-46,8м2-26 уп-884кг",
-   "stock": {
-    "msk": 24.84,
-    "tver": 64.8,
-    "msk_res": 0.0,
-    "tver_res": 0.0
-   },
-   "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHM600815",
    "photos": []
   },
   {
