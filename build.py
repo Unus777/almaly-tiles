@@ -4,7 +4,7 @@
 Как добавить фото: положить файлы в photos/<АРТИКУЛ>/ и запустить `python3 build.py`.
 Порядок фото — по имени файла (01, 02, ...). Первое фото становится обложкой.
 """
-import csv, json, shutil, textwrap, unicodedata
+import csv, hashlib, json, shutil, textwrap, unicodedata
 from pathlib import Path
 
 import qrcode
@@ -67,22 +67,26 @@ def catalog():
 
 
 def make_images(tile):
-    """Ресайз фото артикула в site/img/<арт>/. Возвращает список имён."""
+    """Ресайз фото артикула в docs/img/<арт>/. В имени файла — хеш исходника,
+    поэтому после замены или перестановки фото меняется адрес и кэш не показывает старое."""
     src_dir = PHOTOS / tile["art"]
     src_dir.mkdir(parents=True, exist_ok=True)          # чтобы было куда класть фото
     out_dir = SITE / "img" / tile["art"]
-    names = []
+    names, keep = [], set()
     for i, src in enumerate(sorted(p for p in src_dir.iterdir() if p.suffix.lower() in EXT), 1):
         out_dir.mkdir(parents=True, exist_ok=True)
-        base = f"{i:02d}"
+        base = f"{i:02d}.{hashlib.sha1(src.read_bytes()).hexdigest()[:8]}"
         full, thumb = out_dir / f"{base}.jpg", out_dir / f"{base}_t.jpg"
-        if not full.exists() or full.stat().st_mtime < src.stat().st_mtime:
+        keep |= {full.name, thumb.name}
+        if not full.exists() or not thumb.exists():
             im = ImageOps.exif_transpose(Image.open(src)).convert("RGB")
             big = im.copy(); big.thumbnail((FULL_W, FULL_W), Image.LANCZOS)
             big.save(full, "JPEG", quality=82, optimize=True, progressive=True)
             small = im.copy(); small.thumbnail((THUMB_W, THUMB_W), Image.LANCZOS)
             small.save(thumb, "JPEG", quality=78, optimize=True, progressive=True)
         names.append(base)
+    for stale in (p for p in out_dir.iterdir() if p.name not in keep) if out_dir.is_dir() else ():
+        stale.unlink()                                   # картинки удалённых фото
     return names
 
 

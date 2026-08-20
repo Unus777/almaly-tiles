@@ -143,7 +143,8 @@ async function loadFiles() {
   Object.values(files).forEach(a => a.sort((a, b) => a.f.localeCompare(b.f)));
 }
 
-const raw = (art, f) => `https://raw.githubusercontent.com/${REPO}/${BRANCH}/photos/${art}/${f}`;
+const raw = (art, f, sha) =>                       // ?v=sha — чтобы не показывался кэш старого фото
+  `https://raw.githubusercontent.com/${REPO}/${BRANCH}/photos/${art}/${f}${sha ? '?v=' + sha : ''}`;
 
 function draw() {
   const s = $('#q').value.trim().toLowerCase(), only = $('#only').value;
@@ -161,8 +162,8 @@ function draw() {
         <span class="meta">${t.format} · ${t.surface} · ${ph.length} фото</span>
         ${ph.length > 1 ? '<span class="meta tip">перетащи фото, чтобы поменять порядок · первое — обложка</span>' : ''}</div>
       <div class="shots">
-        ${ph.map(({f}, i) => `<div class="shot ${i ? '' : 'cover'}" data-f="${f}">
-          <img src="${raw(t.art, f)}" alt="" loading="lazy" draggable="false">
+        ${ph.map(({f, sha}, i) => `<div class="shot ${i ? '' : 'cover'}" data-f="${f}">
+          <img src="${raw(t.art, f, sha)}" alt="" loading="lazy" draggable="false">
           ${i ? '' : '<span class="badge">обложка</span>'}
           <button class="del" data-act="del" data-f="${f}" title="Удалить">✕</button>
         </div>`).join('')}
