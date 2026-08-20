@@ -77,6 +77,7 @@ async function renderTile() {
         </table>
         <img class="qr" src="qr/${t.art}.png" alt="QR-код модели ${t.art}">
         <a class="dl" href="qr/${t.art}.png" download>Скачать QR-код</a>
+        <a class="dl" href="admin.html?a=${t.art}">Изменить фото</a>
       </div>
     </div>`;
 

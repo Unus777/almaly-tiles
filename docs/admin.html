@@ -40,6 +40,7 @@
 <header><div class="wrap head">
   <a class="logo" href="index.html">Алмалы<span>·</span>Керамик</a>
   <span class="sub">Редактор медиа</span>
+  <a class="navlink" href="index.html">Каталог</a>
 </div></header>
 
 <main class="wrap">
@@ -135,6 +136,7 @@ function draw() {
     const ph = files[t.art] || [];
     return `<section class="tile" data-art="${t.art}">
       <div class="hd"><b>${t.name}</b><span class="art">${t.art}</span>
+        <a class="navlink" href="tile.html?a=${t.art}" target="_blank">открыть на сайте ↗</a>
         <span class="meta">${t.format} · ${t.surface} · ${ph.length} фото</span>
         ${ph.length > 1 ? '<span class="meta tip">перетащи фото, чтобы поменять порядок · первое — обложка</span>' : ''}</div>
       <div class="shots">
@@ -198,6 +200,7 @@ async function start() {
   try {
     msg('Загружаю каталог…', true);
     tiles = (await fetch('data.json?v=' + Date.now()).then(r => r.json())).tiles;
+    $('#q').value = new URLSearchParams(location.search).get('a') || '';
     await loadFiles();
     $('#tools').hidden = false; $('#hint').hidden = true;
     $('#token').hidden = true; $('#login').hidden = true; $('#logout').hidden = false;

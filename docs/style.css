@@ -16,6 +16,8 @@ header{border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba
 .logo{font-weight:700;letter-spacing:.14em;font-size:15px;text-transform:uppercase}
 .logo span{color:var(--accent)}
 .head .sub{color:var(--dim);font-size:13px;margin-left:auto}
+.navlink{border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--dim)}
+.navlink:hover{border-color:var(--accent);color:var(--accent)}
 
 .hero{padding:44px 0 24px}
 .hero h1{margin:0 0 8px;font-size:clamp(26px,4vw,40px);letter-spacing:-.01em}
@@ -63,7 +65,7 @@ input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(-
 .spec th,.spec td{text-align:left;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px;vertical-align:top}
 .spec th{color:var(--dim);font-weight:400;width:44%}
 .qr{background:#fff;border-radius:var(--radius);padding:14px;max-width:230px}
-.dl{display:inline-block;margin-top:12px;border:1px solid var(--line);border-radius:10px;
+.dl{display:inline-block;margin:12px 8px 0 0;border:1px solid var(--line);border-radius:10px;
   padding:10px 14px;font-size:14px}
 .dl:hover{border-color:var(--accent)}
 footer{border-top:1px solid var(--line);color:var(--dim);font-size:13px;padding:22px 0 40px}
