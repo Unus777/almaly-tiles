@@ -71,11 +71,23 @@ let token = localStorage.getItem('gh_token') || '', tiles = [], files = {};
 const msg = (t, keep) => { const m = $('#msg'); m.textContent = t; m.style.display = t ? 'block' : 'none';
   if (t && !keep) setTimeout(() => { if (m.textContent === t) m.style.display = 'none'; }, 4000); };
 
+const HINTS = {
+  401: 'токен недействителен или отозван — нажми «Выйти» и вставь новый',
+  403: 'у токена нет права Contents: Read and write — пересоздай токен с этим правом',
+  404: 'токен не видит репозиторий — при создании выбери Only select repositories → almaly-tiles',
+  409: 'репозиторий изменился, попробуй ещё раз',
+  422: 'репозиторий изменился, попробуй ещё раз'
+};
+
 async function gh(path, opts = {}) {
   const r = await fetch(`https://api.github.com/repos/${REPO}${path}`, {
     ...opts, headers: {Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', ...opts.headers}});
   const d = r.status === 204 ? {} : await r.json();
-  if (!r.ok) throw new Error(d.message || r.status);
+  if (!r.ok) {
+    const e = new Error(HINTS[r.status] || d.message || `код ${r.status}`);
+    e.status = r.status;
+    throw e;
+  }
   return d;
 }
 
@@ -94,7 +106,16 @@ const shrink = file => new Promise((res, rej) => {
 });
 
 /** Один коммит с набором операций: [{path, content}] и [{path: null-удалить}]. */
-async function commit(message, ops) {
+async function commit(message, ops, retry = true) {
+  try {
+    return await commitOnce(message, ops);
+  } catch (e) {
+    if (!retry || ![409, 422].includes(e.status)) throw e;
+    return commitOnce(message, ops);          // ветка уехала вперёд — пробуем на свежей голове
+  }
+}
+
+async function commitOnce(message, ops) {
   const head = await gh(`/git/refs/heads/${BRANCH}`);
   const base = await gh(`/git/commits/${head.object.sha}`);
   const tree = [];
@@ -199,6 +220,9 @@ $('#list').addEventListener('change', async e => {
 async function start() {
   try {
     msg('Загружаю каталог…', true);
+    const repo = await gh('');
+    if (repo.permissions && !repo.permissions.push)
+      throw new Error('у токена только чтение — нужен доступ Contents: Read and write');
     tiles = (await fetch('data.json?v=' + Date.now()).then(r => r.json())).tiles;
     $('#q').value = new URLSearchParams(location.search).get('a') || '';
     await loadFiles();
