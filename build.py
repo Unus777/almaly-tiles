@@ -125,6 +125,7 @@ def main():
     for t in tiles:
         t["photos"] = make_images(t)
         make_qr(t)
+    tiles.sort(key=lambda t: (not t["photos"], t["format"], t["name"]))   # с фото — первыми
     (SITE / "data.json").write_text(
         json.dumps({"base": BASE, "tiles": tiles}, ensure_ascii=False, indent=1), encoding="utf-8")
     shutil.copytree(QR, SITE / "qr", dirs_exist_ok=True)   # QR доступны и с сайта
