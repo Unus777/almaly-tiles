@@ -141,7 +141,8 @@ const HINTS = {
 };
 
 async function gh(path, opts = {}) {
-  const r = await fetch(`https://api.github.com/repos/${REPO}${path}`, {...opts,
+  const fresh = path + (path.includes('?') ? '&' : '?') + 't=' + Date.now();   // без кэша GitHub отдаёт старую ветку
+  const r = await fetch(`https://api.github.com/repos/${REPO}${fresh}`, {...opts, cache: 'no-store',
     headers: {Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', ...opts.headers}});
   const d = r.status === 204 ? {} : await r.json().catch(() => ({}));
   if (!r.ok) { const e = new Error(HINTS[r.status] || d.message || `код ${r.status}`); e.status = r.status; throw e; }
@@ -149,11 +150,17 @@ async function gh(path, opts = {}) {
 }
 
 /** Один коммит из набора операций; при гонке с автосборкой повторяем на свежей голове. */
-async function commit(message, ops, retry = true) {
-  try { return await commitOnce(message, ops); }
-  catch (e) {
-    if (!retry || ![409, 422].includes(e.status)) throw e;
-    return commitOnce(message, ops);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/** Ветку могла сдвинуть автосборка — пробуем несколько раз на свежей голове. */
+async function commit(message, ops) {
+  for (const wait of [0, 900, 2500, 5000]) {
+    if (wait) await sleep(wait);
+    try { return await commitOnce(message, ops); }
+    catch (e) {
+      const race = [409, 422].includes(e.status) || /fast forward/i.test(e.message);
+      if (!race || wait === 5000) throw e;
+    }
   }
 }
 async function commitOnce(message, ops) {
