@@ -27,7 +27,8 @@ async function renderCatalog() {
         <div class="b">
           <h3>${esc(t.name)}</h3>
           <div class="art">${t.art}</div>
-          <div class="meta"><span class="tag">${t.format}</span><span class="tag">${esc(t.surface)}</span></div>
+          <div class="meta"><span class="tag">${t.format}</span><span class="tag">${esc(t.surface)}</span>
+            ${t.is_new ? '<span class="tag new">Новинка</span>' : ''}</div>
           <div class="stock">
             <span>Москва <b class="${t.stock.msk > 0 ? 'ok' : 'off'}">${m2(t.stock.msk)}</b></span>
             <span>Тверь <b class="${t.stock.tver > 0 ? 'ok' : 'off'}">${m2(t.stock.tver)}</b></span>
@@ -91,7 +92,7 @@ async function renderTile() {
     <div class="tile">
       <div>${gallery}</div>
       <div class="side">
-        <h1>${esc(t.name)}</h1>
+        <h1>${esc(t.name)}${t.is_new ? ' <span class="tag new">Новинка</span>' : ''}</h1>
         <div class="art">${t.art}</div>
 
         <p class="h2">Характеристики</p>

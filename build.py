@@ -46,7 +46,8 @@ def catalog():
     for f in sorted((ROOT / "data").glob("*.csv")):
         for row in csv.DictReader(f.open(encoding="utf-8")):
             art, name = row["Артикулы"].strip(), norm(row["НАЗВАНИЯ"])
-            if not art or not name or "рабочий" not in row["Статус арт."].lower():
+            status = row["Статус арт."].strip().lower()
+            if not art or not name or status not in ("рабочий арт", "new"):
                 continue
             fmt = norm(row["ФОРМАТ"]).replace("Х", "X").replace("X", "×")
             stock = {k: num(row[c]) for k, c in (
@@ -61,6 +62,7 @@ def catalog():
                 "pallet": row["ПАЛЛЕТ М2/КГ"].strip(),
                 "stock": stock,
                 "url": f"{BASE}/tile.html?a={art}",
+                "is_new": status == "new",
             })
     tiles.sort(key=lambda t: (t["format"], t["name"]))
     return tiles
