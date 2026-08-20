@@ -355,8 +355,8 @@
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHF600188",
    "photos": [
-    "01.391b7b18",
-    "02.153ed6b0",
+    "01.153ed6b0",
+    "02.391b7b18",
     "03.dd94ede2",
     "04.93dfea02",
     "05.030289c6"
@@ -1229,9 +1229,9 @@
    "packing": "1 уп-5 шт-1,8 м2-34кг",
    "pallet": "1пал-46,8м2-26 уп-884кг",
    "stock": {
-    "msk": 0.0,
+    "msk": 140.4,
     "tver": 381.6,
-    "msk_res": 140.4,
+    "msk_res": 0.0,
     "tver_res": 0.0
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHF600858",
