@@ -304,7 +304,7 @@
    "packing": "1 уп-5 шт-1,8 м2-34кг",
    "pallet": "1пал-46,8м2-26 уп-884кг",
    "stock": {
-    "msk": 168.12,
+    "msk": 160.92,
     "tver": 657.36,
     "msk_res": 0.0,
     "tver_res": 0.0
@@ -1235,22 +1235,6 @@
     "tver_res": 0.0
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHP600289",
-   "photos": []
-  },
-  {
-   "art": "VHP600288",
-   "name": "Луна Грей Лайт",
-   "format": "60×60",
-   "surface": "Глянец",
-   "packing": "1 уп-5 шт-1,8 м2-34кг",
-   "pallet": "1пал-46,8м2-26 уп-884кг",
-   "stock": {
-    "msk": 0.0,
-    "tver": 0.0,
-    "msk_res": 0.0,
-    "tver_res": 0.0
-   },
-   "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHP600288",
    "photos": []
   },
   {
