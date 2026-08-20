@@ -16,8 +16,8 @@
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHP612038",
    "photos": [
-    "01.1a7a3d2a",
-    "02.36496d76",
+    "01.36496d76",
+    "02.1a7a3d2a",
     "03.08b58888",
     "04.09cf420e",
     "05.732f207e",
@@ -214,7 +214,7 @@
    "stock": {
     "msk": 177.12,
     "tver": 36.0,
-    "msk_res": 23.04,
+    "msk_res": 0.0,
     "tver_res": 0.0
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHP612393",
@@ -494,7 +494,7 @@
    "stock": {
     "msk": 0.0,
     "tver": 0.0,
-    "msk_res": 147.24,
+    "msk_res": 118.44,
     "tver_res": 51.12
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHP600826",
@@ -742,38 +742,6 @@
    "photos": []
   },
   {
-   "art": "VHP612398",
-   "name": "Галина Грей",
-   "format": "60×120",
-   "surface": "Глянец",
-   "packing": "1 уп-2шт-1,44м2-27 кг",
-   "pallet": "1пал-72м2-50уп-1350кг",
-   "stock": {
-    "msk": 7.2,
-    "tver": 0.0,
-    "msk_res": 0.0,
-    "tver_res": 0.0
-   },
-   "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHP612398",
-   "photos": []
-  },
-  {
-   "art": "VHF612114",
-   "name": "Галина Грей Мат",
-   "format": "60×120",
-   "surface": "Матовая",
-   "packing": "1 уп-2шт-1,44м2-27 кг",
-   "pallet": "1пал-72м2-50уп-1350кг",
-   "stock": {
-    "msk": 0.0,
-    "tver": 0.0,
-    "msk_res": 0.0,
-    "tver_res": 0.0
-   },
-   "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHF612114",
-   "photos": []
-  },
-  {
    "art": "VHF612816",
    "name": "Каро Вайт",
    "format": "60×120",
@@ -787,38 +755,6 @@
     "tver_res": 0.0
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHF612816",
-   "photos": []
-  },
-  {
-   "art": "VHF612822",
-   "name": "Лиам Крем Мат",
-   "format": "60×120",
-   "surface": "Матовая",
-   "packing": "1 уп-2шт-1,44м2-27 кг",
-   "pallet": "1пал-72м2-50уп-1350кг",
-   "stock": {
-    "msk": 0.0,
-    "tver": 0.0,
-    "msk_res": 0.0,
-    "tver_res": 0.0
-   },
-   "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHF612822",
-   "photos": []
-  },
-  {
-   "art": "VHF612800",
-   "name": "Миррор Вайт Мат",
-   "format": "60×120",
-   "surface": "Матовая",
-   "packing": "1 уп-2шт-1,44м2-27 кг",
-   "pallet": "1пал-72м2-50уп-1350кг",
-   "stock": {
-    "msk": 0.0,
-    "tver": 0.0,
-    "msk_res": 0.0,
-    "tver_res": 0.0
-   },
-   "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHF612800",
    "photos": []
   },
   {
@@ -915,22 +851,6 @@
     "tver_res": 0.0
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHF612823",
-   "photos": []
-  },
-  {
-   "art": "VHF612122",
-   "name": "Травертин",
-   "format": "60×120",
-   "surface": "Матовая",
-   "packing": "1 уп-2шт-1,44м2-27 кг",
-   "pallet": "1пал-72м2-50уп-1350кг",
-   "stock": {
-    "msk": 0.0,
-    "tver": 0.0,
-    "msk_res": 0.0,
-    "tver_res": 0.0
-   },
-   "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHF612122",
    "photos": []
   },
   {
@@ -1142,22 +1062,6 @@
    "photos": []
   },
   {
-   "art": "VHFZ600837",
-   "name": "Графит Блек",
-   "format": "60×60",
-   "surface": "Матовая",
-   "packing": "1 уп-5 шт-1,8 м2-34кг",
-   "pallet": "1пал-46,8м2-26 уп-884кг",
-   "stock": {
-    "msk": 0.0,
-    "tver": 0.0,
-    "msk_res": 0.0,
-    "tver_res": 0.0
-   },
-   "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHFZ600837",
-   "photos": []
-  },
-  {
    "art": "VHF600228",
    "name": "Ева Вайт",
    "format": "60×60",
@@ -1199,7 +1103,7 @@
    "stock": {
     "msk": 417.24,
     "tver": 511.2,
-    "msk_res": 14.4,
+    "msk_res": 0.0,
     "tver_res": 0.0
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHJ600010",
@@ -1219,22 +1123,6 @@
     "tver_res": 0.0
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHP600502",
-   "photos": []
-  },
-  {
-   "art": "VHP600289",
-   "name": "Луна Грей Дарк",
-   "format": "60×60",
-   "surface": "Глянец",
-   "packing": "1 уп-5 шт-1,8 м2-34кг",
-   "pallet": "1пал-46,8м2-26 уп-884кг",
-   "stock": {
-    "msk": 0.0,
-    "tver": 0.0,
-    "msk_res": 0.0,
-    "tver_res": 0.0
-   },
-   "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHP600289",
    "photos": []
   },
   {
@@ -1363,22 +1251,6 @@
     "tver_res": 0.0
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHF600858",
-   "photos": []
-  },
-  {
-   "art": "VHF600249",
-   "name": "Травертин",
-   "format": "60×60",
-   "surface": "Матовая",
-   "packing": "1 уп-5 шт-1,8 м2-34кг",
-   "pallet": "1пал-46,8м2-26 уп-884кг",
-   "stock": {
-    "msk": 0.0,
-    "tver": 0.0,
-    "msk_res": 0.0,
-    "tver_res": 0.0
-   },
-   "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHF600249",
    "photos": []
   }
  ]
