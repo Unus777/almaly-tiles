@@ -123,3 +123,7 @@ footer{border-top:1px solid var(--line);color:var(--dim);font-size:13px;padding:
   .stats{gap:24px}
   .qrbox img{width:112px}
 }
+
+/* Цифры — ровным шрифтом: у Cormorant они старостильные, разной высоты. */
+.stats b{font-family:var(--sans);font-weight:600;font-size:27px;letter-spacing:-.01em;
+  font-variant-numeric:tabular-nums lining-nums}
