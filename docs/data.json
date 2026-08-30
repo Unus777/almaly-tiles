@@ -120,7 +120,7 @@
    "pallet": "1пал-72м2-50уп-1350кг",
    "stock": {
     "msk": 149.76,
-    "tver": 139.68,
+    "tver": 135.36,
     "msk_res": 0.0,
     "tver_res": 0.0
    },
@@ -171,8 +171,8 @@
    "packing": "1 уп-2шт-1,44м2-27 кг",
    "pallet": "1пал-72м2-50уп-1350кг",
    "stock": {
-    "msk": 30.24,
-    "tver": 740.16,
+    "msk": 11.52,
+    "tver": 711.36,
     "msk_res": 0.0,
     "tver_res": 0.0
    },
@@ -218,8 +218,8 @@
    "packing": "1 уп-2шт-1,44м2-27 кг",
    "pallet": "1пал-72м2-50уп-1350кг",
    "stock": {
-    "msk": 63.36,
-    "tver": 679.68,
+    "msk": 54.72,
+    "tver": 620.64,
     "msk_res": 50.4,
     "tver_res": 0.0
    },
@@ -385,7 +385,7 @@
    "packing": "1 уп-5 шт-1,8 м2-34кг",
    "pallet": "1пал-46,8м2-26 уп-884кг",
    "stock": {
-    "msk": 166.68,
+    "msk": 159.48,
     "tver": 451.8,
     "msk_res": 0.0,
     "tver_res": 0.0
@@ -439,7 +439,7 @@
    "pallet": "1пал-46,8м2-26 уп-884кг",
    "stock": {
     "msk": 123.12,
-    "tver": 163.44,
+    "tver": 140.04,
     "msk_res": 55.8,
     "tver_res": 0.0
    },
@@ -589,7 +589,7 @@
    "packing": "1 уп-5 шт-1,8 м2-34кг",
    "pallet": "1пал-46,8м2-26 уп-884кг",
    "stock": {
-    "msk": 207.36,
+    "msk": 205.56,
     "tver": 1143.72,
     "msk_res": 0.0,
     "tver_res": 0.0
@@ -749,7 +749,7 @@
    "pallet": "1пал-72м2-50уп-1350кг",
    "stock": {
     "msk": 123.12,
-    "tver": 621.36,
+    "tver": 619.92,
     "msk_res": 0.0,
     "tver_res": 0.0
    },
@@ -868,8 +868,8 @@
    "pallet": "1пал-72м2-50уп-1350кг",
    "stock": {
     "msk": 129.6,
-    "tver": 707.04,
-    "msk_res": 40.32,
+    "tver": 699.84,
+    "msk_res": 0.0,
     "tver_res": 0.0
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHF612816",
@@ -919,7 +919,7 @@
    "pallet": "1пал-72м2-50уп-1350кг",
    "stock": {
     "msk": 60.48,
-    "tver": 474.48,
+    "tver": 445.68,
     "msk_res": 0.0,
     "tver_res": 0.0
    },
@@ -936,7 +936,7 @@
    "pallet": "1пал-72м2-50уп-1350кг",
    "stock": {
     "msk": 130.32,
-    "tver": 1518.48,
+    "tver": 1492.56,
     "msk_res": 0.0,
     "tver_res": 0.0
    },
@@ -986,9 +986,9 @@
    "packing": "1 уп-2шт-1,44м2-27 кг",
    "pallet": "1пал-72м2-50уп-1350кг",
    "stock": {
-    "msk": 200.88,
+    "msk": 185.04,
     "tver": 300.96,
-    "msk_res": 0.0,
+    "msk_res": 15.84,
     "tver_res": 0.0
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHR612004",
@@ -1055,7 +1055,7 @@
    "pallet": "1пал-72м2-50уп-1350кг",
    "stock": {
     "msk": 126.0,
-    "tver": 747.36,
+    "tver": 741.6,
     "msk_res": 0.0,
     "tver_res": 0.0
    },
@@ -1089,7 +1089,7 @@
    "pallet": "1пал-46,8м2-26 уп-884кг",
    "stock": {
     "msk": 165.6,
-    "tver": 733.32,
+    "tver": 732.96,
     "msk_res": 0.0,
     "tver_res": 0.0
    },
@@ -1105,9 +1105,9 @@
    "packing": "1 уп-5 шт-1,8 м2-34кг",
    "pallet": "1пал-46,8м2-26 уп-884кг",
    "stock": {
-    "msk": 103.68,
+    "msk": 172.08,
     "tver": 479.52,
-    "msk_res": 68.4,
+    "msk_res": 0.0,
     "tver_res": 0.0
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHF600096",
@@ -1141,7 +1141,7 @@
    "stock": {
     "msk": 152.28,
     "tver": 964.08,
-    "msk_res": 21.6,
+    "msk_res": 0.0,
     "tver_res": 0.0
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHJ600001",
@@ -1157,7 +1157,7 @@
    "pallet": "1пал-46,8м2-26 уп-884кг",
    "stock": {
     "msk": 201.96,
-    "tver": 2040.48,
+    "tver": 2020.68,
     "msk_res": 0.0,
     "tver_res": 0.0
    },
@@ -1241,9 +1241,9 @@
    "packing": "1 уп-5 шт-1,8 м2-34кг",
    "pallet": "1пал-46,8м2-26 уп-884кг",
    "stock": {
-    "msk": 167.04,
-    "tver": 274.68,
-    "msk_res": 23.4,
+    "msk": 150.84,
+    "tver": 229.68,
+    "msk_res": 0.0,
     "tver_res": 0.0
    },
    "url": "https://unus777.github.io/almaly-tiles/tile.html?a=VHF600850",
@@ -1327,7 +1327,7 @@
    "pallet": "1пал-46,8м2-26 уп-884кг",
    "stock": {
     "msk": 387.0,
-    "tver": 1963.8,
+    "tver": 1944.0,
     "msk_res": 0.0,
     "tver_res": 0.0
    },
