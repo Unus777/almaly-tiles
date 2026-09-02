@@ -222,7 +222,7 @@ function drawList() {
     return `<button class="item" data-art="${t.art}" aria-current="${t.art === current}">
       ${ph.length ? `<img src="${rawUrl(t.art, ph[0].f, ph[0].sha)}" alt="" loading="lazy">`
                   : '<span class="noimg">◇</span>'}
-      <span><b>${esc(t.name)}</b><small>${t.art}</small></span>
+      <span><b>${esc(t.name)}</b><small>${t.format} см · ${esc(t.surface)}</small></span>
       <span class="cnt">${ph.length || '—'}</span>
     </button>`;
   }).join('') || '<p class="meta" style="padding:8px">Ничего не найдено</p>';
@@ -254,7 +254,7 @@ function drawWork() {
     <div class="work-hd">
       <div>
         <h2>${esc(t.name)}</h2>
-        <div class="art">${t.art} · ${t.format} · ${esc(t.surface)}</div>
+        <div class="art">${t.format} см · ${esc(t.surface)}</div>
       </div>
       <div class="right">
         <a class="btn" href="tile.html?a=${t.art}" target="_blank">Открыть на сайте ↗</a>

@@ -18,6 +18,6 @@
 fetch('data.json').then(r=>r.json()).then(({tiles})=>{
   document.getElementById('g').innerHTML = tiles.map(t=>`
     <div class="i"><img src="qr/${t.art}.png" alt=""><div class="n">${t.name}</div>
-    <div class="a">${t.art} · ${t.format}</div></div>`).join('');
+    <div class="a">${t.format} см</div></div>`).join('');
 });
 </script>

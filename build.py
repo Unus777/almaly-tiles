@@ -93,7 +93,7 @@ def make_images(tile):
 
 
 def make_qr(tile):
-    """QR с подписью «название + артикул» в центре."""
+    """QR с названием модели в центре — артикул на код не выносим."""
     qr = qrcode.QRCode(version=None, error_correction=ERROR_CORRECT_H, box_size=16, border=2)
     qr.add_data(tile["url"]); qr.make(fit=True)
     img = qr.make_image(fill_color="#111111", back_color="white").convert("RGB")
@@ -105,16 +105,14 @@ def make_qr(tile):
     d.rounded_rectangle([x0, y0, x0 + box_w, y0 + box_h], radius=box_h // 6,
                         fill="white", outline="#111111", width=max(2, w // 300))
 
-    lines = textwrap.wrap(tile["name"].upper(), width=14) or [""]
-    lines = lines[:2] + [tile["art"]]
-    size = int(box_h / (len(lines) + 1.6))
+    lines = (textwrap.wrap(tile["name"].upper(), width=14) or [""])[:3]
+    size = int(box_h / (len(lines) + 0.8))
     while True:
         font = ImageFont.truetype(FONT, size)
         if max(d.textlength(t, font=font) for t in lines) <= box_w * 0.86 or size <= 8:
             break
         size -= 2
-    small = ImageFont.truetype(FONT, max(8, int(size * 0.82)))
-    fonts = [font] * (len(lines) - 1) + [small]
+    fonts = [font] * len(lines)
     gap = int(size * 0.28)
     total = sum(f.size for f in fonts) + gap * (len(lines) - 1)
     y = y0 + (box_h - total) // 2

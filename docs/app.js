@@ -26,7 +26,6 @@ async function renderCatalog() {
         <div class="ph">${cover(t)}</div>
         <div class="b">
           <h3>${esc(t.name)}</h3>
-          <div class="art">${t.art}</div>
           <div class="meta"><span class="tag">${t.format}</span><span class="tag">${esc(t.surface)}</span>
             ${t.is_new ? '<span class="tag new">Новинка</span>' : ''}</div>
           <div class="stock">
@@ -79,7 +78,7 @@ async function renderTile() {
   const t = tiles.find(x => x.art === art);
   const box = document.getElementById('tile');
   if (!t) { box.innerHTML = '<p class="back">Плитка не найдена. <a href="index.html">В каталог</a></p>'; return; }
-  document.title = `${t.name} ${t.art} — Алмалы-Керамик`;
+  document.title = `${t.name} — Алмалы-Керамик`;
 
   const gallery = t.photos.length ? `
     <div class="main-ph" id="big-wrap"><img id="big" src="img/${t.art}/${t.photos[0]}.jpg" alt="${esc(t.name)}"></div>
@@ -93,7 +92,6 @@ async function renderTile() {
       <div>${gallery}</div>
       <div class="side">
         <h1>${esc(t.name)}${t.is_new ? ' <span class="tag new">Новинка</span>' : ''}</h1>
-        <div class="art">${t.art}</div>
 
         <p class="h2">Характеристики</p>
         <table class="spec">
@@ -113,7 +111,7 @@ async function renderTile() {
         </table>
 
         <div class="qrbox">
-          <img src="qr/${t.art}.png" alt="QR-код модели ${t.art}">
+          <img src="qr/${t.art}.png" alt="QR-код модели ${esc(t.name)}">
           <div>
             <p>QR ведёт на эту страницу. Печатайте и ставьте рядом с образцом.</p>
             <a class="dl" href="qr/${t.art}.png" download>Скачать QR</a>
